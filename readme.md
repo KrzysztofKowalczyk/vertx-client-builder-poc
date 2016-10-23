@@ -1,6 +1,6 @@
 ### Proposal for Vert.x Http client builders 
 
-```Java
+```Groovy
 Future<String> result = httpClient(vertx)
    .withHost("www.google.com")
    .returningBodyAsString()
@@ -13,7 +13,7 @@ See **[ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy)** for a wor
 
 The main idea is to have 2 steps and at least 2 types. First step should allow to specify options:
 
-```Java
+```Groovy
 HttpClientBuilder builder = HttpClientBuilder
    .httpClient(vertx)
    .withHost("localhost")
@@ -36,7 +36,7 @@ I think the one for HttpClient should have limited settings to those that can st
 
 First type eventually switch to second stage by defining expected return type:
 
-```Java
+```Groovy
 RequestExecutor<String> stringCall = builder.returningBodyAsString()
 RequestExecutor<CompletedResponse> responseCall = builder.returningCompletedResponse()
 RequestExecutor<Book> modelCall = builder.returning(Book.class)
@@ -48,7 +48,7 @@ Cool thing is that the whole second stage can be done as a single type with all 
 
 Once we have executor instance we can do the call and get future (or pass handlers)
 
-```Java
+```Groovy
 Future<String> responseString = stringCall.get("/")
 assert block(responseString) == "Hello"
 
@@ -65,11 +65,14 @@ I chose to return Future, but concept would work the same if get is taking 2 Han
 Same for returning RxJava Single, CompletableFuture etc. RxJava observable should work nice with multipart post.
 
 What next:
+- Split rx out of main code
+  - Start moving stuff to Java
+  - Move rx code to specific class - create FutureExecutor, RxExecutor etc
+  - ? Provide builder with parametrised return type for with\* methods ? 
+  - ? RxBuilder as extension of main builder ?
+- Support 3 stages, so one can construct client and then for the same client use different return types (String). Maybe getHttpClient() would be enough.
 - Check how it would look like if we provide Vert.x at the end not at the start of building?
-- Support for async body - post("/", futureBody)
-- Support for RxJava Single
-- Support for multipart request taking Observable
-- Support 3 stages? So one can construct client and then for the same client use different return types (String). Maybe getHttpClient() would be enough.
+
 
 Language specific (Groovy) ?:
 - Support map - typical for dynamic groovy

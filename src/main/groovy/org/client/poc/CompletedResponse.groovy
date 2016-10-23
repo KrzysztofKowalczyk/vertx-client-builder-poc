@@ -9,7 +9,6 @@ import io.vertx.core.http.HttpClientResponse
 import io.vertx.core.json.JsonObject
 
 @CompileStatic
-@Canonical
 class CompletedResponse {
     Buffer body
     int statusCode

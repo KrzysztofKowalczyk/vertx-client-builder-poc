@@ -1,14 +1,20 @@
 package org.client.poc
 
+import io.netty.handler.codec.http.HttpResponseStatus
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpClient
 import io.vertx.core.http.HttpClientOptions
 import io.vertx.core.http.HttpClientRequest
 import io.vertx.core.json.JsonObject
+import rx.Observable
+import rx.Single
 import spock.lang.Specification
 
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST
 
 class ClientSpec extends Specification implements VertxUtils {
 
@@ -96,7 +102,7 @@ class ClientSpec extends Specification implements VertxUtils {
             .httpClient(vertx)
             .withPort(port)
 
-        RequestExecutor<String> executor = builder
+        RequestExecutor<Future<String>> executor = builder
             .returningBodyAsString()
 
         when:
@@ -162,5 +168,161 @@ class ClientSpec extends Specification implements VertxUtils {
         result instanceof Book
         result.title == "The Last Wish"
         result.author == "Andrzej Sapkowski"
+    }
+
+    def "builder - post"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+            .withPort(port)
+            .returningBodyAsString()
+
+        when:
+        def result = block builder.post("/game", "ping")
+
+        then:
+        result == "pong"
+    }
+
+    def "builder - post with bad request"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+                .withPort(port)
+                .returningCompletedResponse()
+
+        when:
+        def result = block builder.post("/game")
+
+        then:
+        result.statusCode == BAD_REQUEST.code()
+        result.statusMessage == "Bad Request"
+        result.bodyAsString() == "Bad Request"
+    }
+
+    def "builder - post with body future"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+            .withPort(port)
+            .returningBodyAsString()
+
+        def body = Future.future()
+        Thread.start {
+            Thread.sleep 300
+            body.complete "ping"
+        }
+
+        when:
+        def result = block builder.post("/game", body)
+
+        then:
+        result == "pong"
+    }
+
+    def "builder - post propagate exceptions thrown in body future"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+                .withPort(port)
+                .returningBodyAsString()
+
+        def body = Future.future()
+        Thread.start {
+            Thread.sleep 300
+            body.fail new IllegalArgumentException()
+        }
+
+        when:
+        def result = block builder.post("/game", body)
+
+        then:
+        thrown IllegalArgumentException
+    }
+
+    def "rx - get string response"() {
+        given:
+        def api = HttpClientBuilder
+            .httpClient(vertx)
+            .withPort(port)
+            .returningBodyAsStringSingle()
+
+        when:
+        def result = api.get("/").toBlocking().value()
+
+        then:
+        result == "Hello"
+    }
+
+    def "rx - get request exception"() {
+        given:
+        def api = HttpClientBuilder
+            .httpClient(vertx)
+            .withPort(wrongPort)
+            .returningBodyAsStringSingle()
+
+        when:
+        api.get("/").toBlocking().value()
+
+        then:
+        Exception e = thrown()
+        e.message.contains "Connection refused"
+    }
+
+    def "rx - get json"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+            .withPort(port)
+            .returningBodyAsJsonObjectSingle()
+
+        when:
+        def result = builder.get("/json").toBlocking().value()
+
+        then:
+        result instanceof JsonObject
+        result.map.this.is == "JSON!"
+    }
+
+    def "rx - get class"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+            .withPort(port)
+            .returningSingle(Book)
+
+        when:
+        def result = builder.get("/book").toBlocking().value()
+
+        then:
+        result instanceof Book
+        result.title == "The Last Wish"
+        result.author == "Andrzej Sapkowski"
+    }
+
+    def "rx - post multipart request"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+            .withPort(port)
+            .withChunked(true)
+            .returningBodyAsStringSingle()
+
+        def body = Observable.just('1','2','3','4','5')
+
+        when:
+        def result = builder.post("/echo", body).toBlocking().value()
+
+        then:
+        result == "12345"
+    }
+
+    def "rx - post Single<String>"() {
+        given:
+        def builder = HttpClientBuilder.httpClient(vertx)
+                .withPort(port)
+                .withChunked(true)
+                .returningBodyAsStringSingle()
+
+        def body = Single.just("ping").delay(300, TimeUnit.MILLISECONDS)
+
+        when:
+        def result = builder.post("/game", body).toBlocking().value()
+
+        then:
+        result == "pong"
     }
 }

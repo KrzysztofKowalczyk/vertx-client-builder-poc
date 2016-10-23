@@ -5,6 +5,7 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.BodyHandler
 
 import static io.vertx.ext.web.Router.router
 
@@ -22,6 +23,9 @@ class Server extends AbstractVerticle {
 
     Router router(){
         def r = router(vertx)
+
+        r.route() handler(BodyHandler.create())
+
         r.get("/") handler { it.response().end "Hello" }
         r.get("/json") handler { it.response().end '{ "this": { "is": "JSON!" } }' }
         r.get("/book") handler { it.response().end """
@@ -30,6 +34,19 @@ class Server extends AbstractVerticle {
                 "author": "Andrzej Sapkowski"
             }
         """ }
+
+        r.post("/game") handler {
+            if(it.bodyAsString == "ping") {
+                it.response().end("pong")
+            } else {
+                it.fail(400)
+            }
+        }
+
+        r.post("/echo") handler {
+            it.response().end(it.bodyAsString)
+        }
+
         r
     }
 }
