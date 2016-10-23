@@ -55,7 +55,7 @@ RequestExecutor<HttpClientResponse> classicCall = builder.returningResponse()
 ```
 
 Second type allow to do actual call and return expected response as per specification. It wraps a HttpClient instance.
-Cool thing is that the whole second stage can be done as a single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy). It can support different types like RxJava Single, CompletableFuture without changes. 
+Cool thing is that the whole second stage can be done as a single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy). It can support different types like RxJava Single, CompletableFuture without changes. Though splitting it to many types might make code simpler.
 
 Once we have executor instance we can do the call and get future (or pass handlers)
 
