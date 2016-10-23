@@ -1,6 +1,6 @@
 ### Proposal for Vert.x Http client builders 
   
-See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy).
+See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for working prototype.
 
 The main idea is that there are 2 steps and at least 2 types. One that allow to specify options:
 
@@ -11,7 +11,7 @@ HttpClientBuilder builder = HttpClientBuilder
    .withPort(port)
    .withPipelining(true)
    .withKeepAlive(true)
-   .withHeaders("Content-Type", "text/json", "TraceId","1")
+   .withHeaders("Accept", "text/json", "TraceId","1")
    //...
 ```
 
