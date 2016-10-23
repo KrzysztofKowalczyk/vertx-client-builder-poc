@@ -61,9 +61,19 @@ What next:
 
 Language specific (Groovy) ?:
 - Support map - typical for dynamic groovy
-- Build with closure (client(vertx) { port 8080; headers hello: "world" }) - static typed
+- Build and request with closure - static typed
 
+```Groovy
+HttpClientBuilder builder = HttpClientBuilder.httpClient(vertx) {
+   host "localhost")
+   port port
+   pipelining true
+   keepAlive true
+   headers Accept: "text/json", TraceId: "1"
+}
+```   
+   
 Boring stuff:
 - Sending headers, query params from request methods (get(path, params, headers)) - support for map and multimap
 - Setting default headers on builder
-- Explicit support for authentication, i.e. withBasicAuth(user, password), get("/", basicAuth(user, password))
+- Explicit support for authentication, i.e. `withBasicAuth(user, password)`, `get("/", basicAuth(user, password))`
