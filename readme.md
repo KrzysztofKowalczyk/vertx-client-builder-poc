@@ -1,13 +1,24 @@
 ### Proposal for Vert.x Http client builders 
 
 ```Groovy
+Future<String> pong = httpClient(vertx)
+   .withHost("www.google.com")
+   .returningBodyAsString()
+   .get("/pong")
+   
 Future<String> result = httpClient(vertx)
    .withHost("www.google.com")
    .returningBodyAsString()
-   .get("/")
+   .post("/ping", pong)
+   
+Observable<String> body = Observable.just("a","b","c")
+Single<String> rxjava = httpClient(vertx)
+   .withHost("www.google.com")
+   .returningBodyAsStringSingle()
+   .post("/", body)
 ```
 
-Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java-ish.
+Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java compatible.
 
 See **[ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy)** for a working prototype in action.
 
