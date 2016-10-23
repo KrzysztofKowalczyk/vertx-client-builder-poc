@@ -51,7 +51,7 @@ assert r.bodyAsString == "Hello"
 This way once the executor is created, doing rest on any API is trivial. 
 
 I chose to return Future, but concept would work the same if get is taking 2 Handlers or AsyncResult.
-Samve for returning RxJava Single, CompletableFuture etc. RxJava observable should work nice with multipart post.
+Same for returning RxJava Single, CompletableFuture etc. RxJava observable should work nice with multipart post.
 
 What next:
 - Check how it would look like if we provide Vert.x at the end not at the start of building?
