@@ -1,8 +1,9 @@
 ### Proposal for Vert.x Http client builders 
-  
-See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for working prototype.
 
-The main idea is that there are 2 steps and at least 2 types. One that allow to specify options:
+Follow up to a discussion during Vert.x community meeting. 
+See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working prototype.
+
+The main idea is to have steps and at least 2 types. First step should allow to specify options:
 
 ```
 HttpClientBuilder builder = HttpClientBuilder
@@ -15,14 +16,16 @@ HttpClientBuilder builder = HttpClientBuilder
    //...
 ```
 
-First one should be immutable (Copy on Write) and expose all settings from HttpClientOptions,
-plus methods that define the return type of actual call and some extra methods like common headers or auth.
-It should be side effect free. 
-It could be made serializable if vertx would be provided as parameter of last method not the first one.
+Type here should be immutable (Copy on Write) so it can at as template. It should:
+- expose all settings from HttpClientOptions
+- some extra methods to define common headers or auth, base path etc.
+- methods that define the return type of actual call - they switch to next step
+It should be side effect free. It could be made serializable if vertx would be provided
+as parameter of last method not the first one.
 There should be starting point for Vertx, HttpClientOptions and HttpClient. 
 I think the one for HttpClient should have limited settings to those that can still be changed.
-s  
-First type eventually return second type - the request executor:
+
+First type eventually switch to second stage by defining expected return type:
 
 ```
 RequestExecutor<String> stringCall = builder.returningBodyAsString()
@@ -31,7 +34,9 @@ RequestExecutor<Book> modelCall = builder.returning(Book.class)
 RequestExecutor<HttpClientResponse> classicCall = builder.returningResponse()
 ```
 
+Cool thing is that the whole second stage can be done as single type with all REST verbs by passing strategy to it, see respond\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy) 
 Second type allow to do actual call and return expected response as per specification.
+
 ```
 Future<String> responseString = stringCall.get("/")
 assert block(responseString) == "Hello"
