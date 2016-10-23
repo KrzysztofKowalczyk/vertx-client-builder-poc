@@ -1,7 +1,7 @@
 ### Proposal for Vert.x Http client builders 
 
-Follow up to a discussion during Vert.x community meeting. 
-See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working prototype.
+Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java-ish.
+See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working prototype in action.
 
 The main idea is to have steps and at least 2 types. First step should allow to specify options:
 
@@ -34,7 +34,7 @@ RequestExecutor<Book> modelCall = builder.returning(Book.class)
 RequestExecutor<HttpClientResponse> classicCall = builder.returningResponse()
 ```
 
-Cool thing is that the whole second stage can be done as single type with all REST verbs by passing strategy to it, see respond\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy) 
+Cool thing is that the whole second stage can be done as single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy).
 Second type allow to do actual call and return expected response as per specification.
 
 ```
