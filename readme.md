@@ -13,7 +13,7 @@ Future<String> result = httpClient(vertx)
    
 Observable<String> multipart_body = Observable.just("a","b","c")
 Single<String> rxjava = httpClient(vertx)
-   .withHost("www.google.com")
+   .withPort(8080)
    .returningBodyAsStringSingle()
    .post("/", multipart_body)
 ```
