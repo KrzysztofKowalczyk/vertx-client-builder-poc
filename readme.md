@@ -26,8 +26,8 @@ HttpClientBuilder builder = HttpClientBuilder
 
 Type here should be immutable (Copy on Write) so it can act as template. It should:
 - expose all settings from HttpClientOptions
-- some extra methods to define common headers or auth, base path etc.
-- methods that define the return type of actual call - they switch to next step
+- have some extra methods to define common headers or auth, base path etc.
+- have methods that define the return type of actual call - those switch to next step
 It should be side effect free. It could be made serializable if vertx would be provided
 as parameter of last method not the first one.
 There should be starting point for Vertx, HttpClientOptions and HttpClient. 
