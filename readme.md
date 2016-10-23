@@ -16,7 +16,7 @@ HttpClientBuilder builder = HttpClientBuilder
    //...
 ```
 
-Type here should be immutable (Copy on Write) so it can at as template. It should:
+Type here should be immutable (Copy on Write) so it can act as template. It should:
 - expose all settings from HttpClientOptions
 - some extra methods to define common headers or auth, base path etc.
 - methods that define the return type of actual call - they switch to next step
