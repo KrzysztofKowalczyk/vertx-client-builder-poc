@@ -1,6 +1,6 @@
 ### Proposal for Vert.x Http client builders 
-
-See ClientSpec.
+  
+See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy).
 
 The main idea is that there are 2 steps and at least 2 types. One that allow to specify options:
 
@@ -16,11 +16,12 @@ HttpClientBuilder builder = HttpClientBuilder
 ```
 
 First one should be immutable (Copy on Write) and expose all settings from HttpClientOptions,
-plus methods that define the return type of actual call. It should be side effect free. 
+plus methods that define the return type of actual call and some extra methods like common headers or auth.
+It should be side effect free. 
 It could be made serializable if vertx would be provided as parameter of last method not the first one.
 There should be starting point for Vertx, HttpClientOptions and HttpClient. 
 I think the one for HttpClient should have limited settings to those that can still be changed.
-
+s  
 First type eventually return second type - the request executor:
 
 ```
