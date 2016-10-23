@@ -1,21 +1,21 @@
 ### Proposal for Vert.x Http client builders 
 
 ```Groovy
-Future<String> pong = httpClient(vertx)
-   .withHost("www.google.com")
+Future<String> world = httpClient(vertx)
+   .withHost("world.io")
    .returningBodyAsString()
-   .get("/pong")
+   .get("/world")
    
 Future<String> result = httpClient(vertx)
-   .withHost("www.google.com")
+   .withHost("hello.io")
    .returningBodyAsString()
-   .post("/ping", pong)
+   .post("/hello", world)
    
-Observable<String> body = Observable.just("a","b","c")
+Observable<String> multipart_body = Observable.just("a","b","c")
 Single<String> rxjava = httpClient(vertx)
    .withHost("www.google.com")
    .returningBodyAsStringSingle()
-   .post("/", body)
+   .post("/", multipart_body)
 ```
 
 Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java compatible.
