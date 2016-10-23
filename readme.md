@@ -1,5 +1,12 @@
 ### Proposal for Vert.x Http client builders 
 
+```Java
+Future<String> result = httpClient(vertx)
+   .withHost("www.google.com")
+   .returningBodyAsString()
+   .get("/")
+```
+
 Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java-ish.
 See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working prototype in action.
 
@@ -34,8 +41,10 @@ RequestExecutor<Book> modelCall = builder.returning(Book.class)
 RequestExecutor<HttpClientResponse> classicCall = builder.returningResponse()
 ```
 
-Cool thing is that the whole second stage can be done as single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy).
-Second type allow to do actual call and return expected response as per specification.
+Second type allow to do actual call and return expected response as per specification. It wraps a HttpClient instance.
+Cool thing is that the whole second stage can be done as a single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy). It can support different types like RxJava Single, CompletableFuture without changes. 
+
+Once we have executor instance we can do the call and get future (or pass handlers)
 
 ```Java
 Future<String> responseString = stringCall.get("/")
@@ -48,7 +57,7 @@ assert r.statusCode == 200
 assert r.bodyAsString == "Hello"
 ```
 
-This way once the executor is created, doing rest on any API is trivial. 
+This way once the executor is created, doing REST is trivial. 
 
 I chose to return Future, but concept would work the same if get is taking 2 Handlers or AsyncResult.
 Same for returning RxJava Single, CompletableFuture etc. RxJava observable should work nice with multipart post.
@@ -76,4 +85,4 @@ HttpClientBuilder builder = HttpClientBuilder.httpClient(vertx) {
 Boring stuff:
 - Sending headers, query params from request methods (get(path, params, headers)) - support for map and multimap
 - Setting default headers on builder
-- Explicit support for authentication, i.e. `withBasicAuth(user, password)`, `get("/", basicAuth(user, password))`
+- Explicit support for authentication, i.e. `withBasicAuth(user, password)` for one off calls and `get("/", basicAuth(user, password))` for recuring calls
