@@ -65,8 +65,8 @@ Language specific (Groovy) ?:
 
 ```Groovy
 HttpClientBuilder builder = HttpClientBuilder.httpClient(vertx) {
-   host "localhost")
-   port port
+   host "localhost"
+   port 8080
    pipelining true
    keepAlive true
    headers Accept: "text/json", TraceId: "1"
