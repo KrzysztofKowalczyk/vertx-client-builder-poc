@@ -69,6 +69,7 @@ What next:
 - Support for async body - post("/", futureBody)
 - Support for RxJava Single
 - Support for multipart request taking Observable
+- Support 3 stages? So one can construct client and then for the same client use different return types (String). Maybe getHttpClient() would be enough.
 
 Language specific (Groovy) ?:
 - Support map - typical for dynamic groovy
