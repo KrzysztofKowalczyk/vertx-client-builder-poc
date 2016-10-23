@@ -5,7 +5,7 @@ See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working
 
 The main idea is to have 2 steps and at least 2 types. First step should allow to specify options:
 
-```
+```Java
 HttpClientBuilder builder = HttpClientBuilder
    .httpClient(vertx)
    .withHost("localhost")
@@ -27,7 +27,7 @@ I think the one for HttpClient should have limited settings to those that can st
 
 First type eventually switch to second stage by defining expected return type:
 
-```
+```Java
 RequestExecutor<String> stringCall = builder.returningBodyAsString()
 RequestExecutor<CompletedResponse> responseCall = builder.returningCompletedResponse()
 RequestExecutor<Book> modelCall = builder.returning(Book.class)
@@ -37,7 +37,7 @@ RequestExecutor<HttpClientResponse> classicCall = builder.returningResponse()
 Cool thing is that the whole second stage can be done as single type with all REST verbs by passing strategy to it, see returning\* methods in [HttpClientBuilder](src/main/groovy/org/client/poc/HttpClientBuilder.groovy).
 Second type allow to do actual call and return expected response as per specification.
 
-```
+```Java
 Future<String> responseString = stringCall.get("/")
 assert block(responseString) == "Hello"
 
