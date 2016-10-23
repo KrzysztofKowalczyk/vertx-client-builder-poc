@@ -78,14 +78,12 @@ class ClientSpec extends Specification implements VertxUtils {
         and: "wait for result"
         block(body)
 
-        then:
+        then: "connection refused is not thrown :("
         thrown TimeoutException
 
         // There is connection refused, but this way we never get it and handler never completes
         // You can see the exception in logs: SEVERE: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8091
-
-        // Exception e = thrown()
-        // e.message.contains "Connection refused"
+        // getNow and others should be deprecated.
     }
 
     //
@@ -114,7 +112,6 @@ class ClientSpec extends Specification implements VertxUtils {
             .withPort(port)
             .returningCompletedResponse()
 
-
         when:
         CompletedResponse response = block builder.get("/")
 
@@ -130,7 +127,6 @@ class ClientSpec extends Specification implements VertxUtils {
             .withPort(wrongPort)
             .returningBodyAsString()
 
-
         when:
         block builder.get("/")
 
@@ -144,7 +140,6 @@ class ClientSpec extends Specification implements VertxUtils {
         def builder = HttpClientBuilder.httpClient(vertx)
             .withPort(port)
             .returningBodyAsJsonObject()
-
 
         when:
         def result = block builder.get("/json")
@@ -160,7 +155,6 @@ class ClientSpec extends Specification implements VertxUtils {
             .withPort(port)
             .returning(Book)
 
-
         when:
         def result = block builder.get("/book")
 
@@ -169,7 +163,4 @@ class ClientSpec extends Specification implements VertxUtils {
         result.title == "The Last Wish"
         result.author == "Andrzej Sapkowski"
     }
-
-
-
 }

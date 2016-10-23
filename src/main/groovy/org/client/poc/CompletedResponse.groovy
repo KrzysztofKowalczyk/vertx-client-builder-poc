@@ -2,6 +2,7 @@ package org.client.poc
 
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
 import io.vertx.core.MultiMap
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpClientResponse
@@ -23,10 +24,12 @@ class CompletedResponse {
         // ...
     }
 
+    @Memoized
     JsonObject bodyAsJsonObject() {
         body.toJsonObject()
     }
 
+    @Memoized
     String bodyAsString() {
         body.toString()
     }

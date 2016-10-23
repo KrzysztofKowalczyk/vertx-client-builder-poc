@@ -12,6 +12,9 @@ import io.vertx.core.http.HttpClientResponse
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 
+import java.util.function.BiConsumer
+import java.util.function.Consumer
+
 
 /**
  * This is not meant to be a proper implementation. It only shows how I see the API.
@@ -28,57 +31,59 @@ class HttpClientBuilder {
     }
 
     RequestExecutor<String> returningBodyAsString(){
-        new RequestExecutor(buildClient(), { Future<String> result, HttpClientResponse response ->
+        returning { Future<String> result, HttpClientResponse response ->
             response.exceptionHandler(result.&fail)
             response.bodyHandler{ Buffer buffer -> result.complete(buffer?.toString())}
-        })
+        }
     }
 
     //FIXME: not happy with the name
     // I could go even with CompletedResponse<JsonObject> -> returningCompletedJsonResponse?
     // for now I leave bodyAsJson on response itself
     RequestExecutor<CompletedResponse> returningCompletedResponse(){
-        new RequestExecutor(buildClient(), { Future<CompletedResponse> result, HttpClientResponse response ->
+        returning { Future<CompletedResponse> result, HttpClientResponse response ->
             response.exceptionHandler(result.&fail)
             response.bodyHandler{ Buffer buffer ->
                 result.complete(new CompletedResponse(response, buffer))
             }
-        })
+        }
     }
 
     RequestExecutor<JsonObject> returningBodyAsJsonObject(){
-        new RequestExecutor(buildClient(), { Future<JsonObject> result, HttpClientResponse response ->
+        returning { Future<JsonObject> result, HttpClientResponse response ->
             response.exceptionHandler(result.&fail)
             response.bodyHandler{ Buffer buffer -> result.complete(buffer?.toJsonObject())}
-        })
+        }
     }
 
     // I can still return HttpClientResponse
     RequestExecutor<HttpClientResponse> returningResponse(){
-        new RequestExecutor(buildClient(), { Future<HttpClientResponse> result, HttpClientResponse response ->
+        returning { Future<HttpClientResponse> result, HttpClientResponse response ->
             result.complete(response)
-        })
+        }
     }
 
     // or buffer
     RequestExecutor<Buffer> returningBody(){
-        new RequestExecutor(buildClient(), { Future<Buffer> result, HttpClientResponse response ->
+        returning { Future<Buffer> result, HttpClientResponse response ->
             response.exceptionHandler(result.&fail)
             response.bodyHandler(result.&complete)
-        })
+        }
     }
 
     // or model
     def <T> RequestExecutor<T> returning(Class<T> clazz){
-        new RequestExecutor(buildClient(), { Future<T> result, HttpClientResponse response ->
+        returning { Future<T> result, HttpClientResponse response ->
             response.exceptionHandler(result.&fail)
             response.bodyHandler{ buffer -> result.complete(Json.decodeValue(buffer.toString(), clazz))}
-        })
+        }
     }
 
-    //FIXME: expose returningStrategy(BiConsumer strategy)
+    def <T> RequestExecutor<T> returning(BiConsumer<Future<T>, HttpClientResponse> strategy){
+        new RequestExecutor(buildClient(), strategy)
+    }
 
-    HttpClient buildClient(){
+    private HttpClient buildClient(){
         vertx.createHttpClient(new HttpClientOptions().setDefaultPort(port))
     }
 }
