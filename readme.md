@@ -3,7 +3,7 @@
 Follow up to a discussion during Vert.x community meeting. Code written in Groovy for sanity and because lack of time, but the concept is Java-ish.
 See [ClientSpec](src/test/groovy/org/client/poc/ClientSpec.groovy) for a working prototype in action.
 
-The main idea is to have steps and at least 2 types. First step should allow to specify options:
+The main idea is to have 2 steps and at least 2 types. First step should allow to specify options:
 
 ```
 HttpClientBuilder builder = HttpClientBuilder
