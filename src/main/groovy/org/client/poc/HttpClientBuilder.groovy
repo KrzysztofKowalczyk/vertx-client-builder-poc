@@ -28,7 +28,6 @@ import java.util.function.Consumer
 class HttpClientBuilder {
     Vertx vertx
     int port
-    boolean chunked
 
     private HttpClient buildClient(){
         vertx.createHttpClient(new HttpClientOptions()

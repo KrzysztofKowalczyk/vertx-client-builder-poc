@@ -298,7 +298,6 @@ class ClientSpec extends Specification implements VertxUtils {
         given:
         def builder = HttpClientBuilder.httpClient(vertx)
             .withPort(port)
-            .withChunked(true)
             .returningBodyAsStringSingle()
 
         def body = Observable.just('1','2','3','4','5')
@@ -314,7 +313,6 @@ class ClientSpec extends Specification implements VertxUtils {
         given:
         def builder = HttpClientBuilder.httpClient(vertx)
                 .withPort(port)
-                .withChunked(true)
                 .returningBodyAsStringSingle()
 
         def body = Single.just("ping").delay(300, TimeUnit.MILLISECONDS)
